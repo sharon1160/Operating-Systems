@@ -1,2 +1,2 @@
 # Operating Systems
-Practices and laboratories
+Operating Systems practices and laboratories
