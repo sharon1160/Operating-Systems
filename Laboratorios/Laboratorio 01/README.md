@@ -19,6 +19,8 @@ A continuación creamos objetos de memoria compartida con los nombres `/myregion
 rptr = mmap(NULL, sizeof(struct region), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 rptr2 = mmap(NULL, sizeof(struct PIDHora), PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0);
 ```
+Luego, dentro del bucle while creamos un hijo con la funcion fork(), guardamos el tiempo en el que se creo el proceso hijo en un array llamado output, para luego mostrarlo en la terminal; imprimimos la información del proceso hijo y padre, después actualizamos la variable next_produced guardando en ella el pid del proceso hijo, para luego pasarlo al buffer, el cual esta dentro de la estructura de la memoria compartida; finalmente realizamos un sleep.
+
 ```c
 while( true ) {
 	int s = rand() % 5 + 1;
