@@ -22,3 +22,4 @@ A continuación creamos objetos de memoria compartida con los nombres `/myregion
 ```
 
 
+https://github.com/sharon1160/Operating-Systems/blob/cf6f6920911270272e5ace4ee8258d7608eb8cfe/Laboratorios/Laboratorio%2001/producer2.cpp#L108-L132
