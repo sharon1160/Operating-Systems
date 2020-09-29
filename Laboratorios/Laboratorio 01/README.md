@@ -20,11 +20,76 @@ A continuación creamos objetos de memoria compartida con los nombres `/myregion
     rptr = mmap(NULL, sizeof(struct region), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     rptr2 = mmap(NULL, sizeof(struct PIDHora), PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0);
 ```
+```c
+while( true ) {
+		int s = rand() % 5 + 1;
 
+		tiempo = time(0);
+        struct tm *tlocal = localtime(&tiempo);
+        char output[128];
+        strftime(output,128,"%H:%M:%S",tlocal);
+	
+		printf("%s\n",(char *)rptr->buf);
+		
+		while( in  ==  out );
+		/* do  nothing */
+		next_consumed =  buffer [ out ] ;
+		out =  ( out + 1) % BUFFER_SIZE ;
 
-https://github.com/sharon1160/Operating-Systems/blob/cf6f6920911270272e5ace4ee8258d7608eb8cfe/Laboratorios/Laboratorio%2001/producer2.cpp#L108-L132
+		printf("[ %s ] C( %d ) : Matando Proceso %d ( vivió %s ) \n", output , getpid() , rptr2->pid, rptr2->tiempo);
+
+		kill(next_consumed.value , SIGKILL);
+
+		sleep (s);
+	}
+```
 
 ## Consumidor
 
-Primero creamos nuevamente las estructuras "region" y "PIDHora" y creamos dos punteros a ambas estructuras rptr("region") y rptr2("PIDHora"), abrimos el segmento de memoria compartida para ambas estructuras pero con el permiso de solo leer mas no crear o escribir, luego colocamos mensajes en printf por si llega a haber un error al momento de abrir la memoria compartida. Posteriormente, mapeamos el segmento de memoria compartida en el espacio de direcciones del proceso tanto para el rptr( puntero a un struct "region") y  rptr2( puntero a un struct "PIDHora"), si hay un error en el mapeo, imprimimos mensaje de error al mapear. 
+Primero creamos nuevamente las estructuras `region` y `PIDHora` y creamos dos punteros a ambas estructuras `rptr("region")` y `rptr2("PIDHora")`.
+Abrimos el segmento de memoria compartida para ambas estructuras pero con el permiso de solo leer mas no crear o escribir, luego colocamos mensajes en `printf` por si llega a haber un error al momento de abrir la memoria compartida.
+```c
+fd = shm_open ("/myregion", O_RDONLY,  S_IRUSR | S_IWUSR);
+fd2 = shm_open ( "/PIDHora" , O_RDONLY, S_IRUSR | S_IWUSR );
+```
+Posteriormente, mapeamos el segmento de memoria compartida en el espacio de direcciones del proceso tanto para el `rptr` (puntero a un struct "region") y  `rptr2` (puntero a un struct "PIDHora"), si hay un error en el mapeo, imprimimos mensaje de error al mapear.
+```c
+	rptr = mmap(NULL, sizeof(struct region), PROT_READ , MAP_SHARED, fd, 0);
+	rptr2 = mmap(NULL, sizeof(struct PIDHora), PROT_READ, MAP_SHARED, fd2, 0);
+
+	if ( rptr == MAP_FAILED ){
+        /* Handle error */
+        printf("\n Failed to map the shared memory 1\n");
+        return -1;
+    }
+
+	if ( rptr2 == MAP_FAILED ){
+        /* Handle error */
+        printf("\n Failed to map the shared memory 2\n");
+        return -1;
+    }
+```
 Luego hacemos uso de la plantilla de la sección 6.2 de la práctica de laboratorio , donde nos encontramos con el bucle infinito while, en cada iteración leemos el buffer de los procesos creados, dentro del while se actualiza la variable out, y realizamos un kill al proceso creado, finalmente mostramos en la terminal la información del consumidor y hacemos un sleep.
+```c
+	while( true ) {
+		int s = rand() % 5 + 1;
+
+		tiempo = time(0);
+        struct tm *tlocal = localtime(&tiempo);
+        char output[128];
+        strftime(output,128,"%H:%M:%S",tlocal);
+	
+		printf("%s\n",(char *)rptr->buf);
+		
+		while( in  ==  out );
+		/* do  nothing */
+		next_consumed =  buffer [ out ] ;
+		out =  ( out + 1) % BUFFER_SIZE ;
+
+		printf("[ %s ] C( %d ) : Matando Proceso %d ( vivió %s ) \n", output , getpid() , rptr2->pid, rptr2->tiempo);
+
+		kill(next_consumed.value , SIGKILL);
+
+		sleep (s);
+	}
+```
